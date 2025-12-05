@@ -40,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         decoration: BoxDecoration(
           border: Border(
             top: BorderSide(
-              color: themeService.borderColor,
+              color: themeService.secondaryTextColor,
               width: 0.5,
             ),
           ),

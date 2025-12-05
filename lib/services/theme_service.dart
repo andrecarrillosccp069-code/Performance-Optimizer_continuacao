@@ -45,12 +45,7 @@ class ThemeService extends ChangeNotifier {
       elevation: 0,
       foregroundColor: Colors.white,
     ),
-    bottomNavigationBarTheme: const BottomNavigationBarTheme(
-      backgroundColor: Color(0xFF1A1A1A),
-      selectedItemColor: Colors.white,
-      unselectedItemColor: Colors.white60,
-      type: BottomNavigationBarType.fixed,
-    ),
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.white,
@@ -84,13 +79,7 @@ class ThemeService extends ChangeNotifier {
       foregroundColor: Colors.black,
       shadowColor: Colors.black12,
     ),
-    bottomNavigationBarTheme: const BottomNavigationBarTheme(
-      backgroundColor: Colors.white,
-      selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.grey,
-      type: BottomNavigationBarType.fixed,
-      elevation: 8,
-    ),
+
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: Colors.blue,

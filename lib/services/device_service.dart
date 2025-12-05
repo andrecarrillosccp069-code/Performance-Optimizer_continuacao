@@ -73,11 +73,11 @@ class DeviceService {
   Future<Map<String, dynamic>> getConnectivityInfo() async {
     try {
       final connectivityResult = await _connectivity.checkConnectivity();
-      final connectionType = connectivityResult.first.toString().split('.').last;
+      final connectionType = connectivityResult.toString().split('.').last;
       
       return {
         'type': connectionType,
-        'isConnected': connectivityResult.first != ConnectivityResult.none,
+        'isConnected': connectivityResult != ConnectivityResult.none,
         'quality': _getConnectionQuality(connectionType),
       };
     } catch (e) {

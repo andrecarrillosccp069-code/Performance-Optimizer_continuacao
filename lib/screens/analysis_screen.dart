@@ -16,6 +16,7 @@ class AnalysisScreen extends StatefulWidget {
 class _AnalysisScreenState extends State<AnalysisScreen> {
   Map<String, dynamic>? _performanceData;
   bool isAnalyzing = false;
+  int systemScore = 0;
 
   @override
   void initState() {
