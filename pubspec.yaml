@@ -2,7 +2,7 @@ name: performance_optimizer
 description: "Performance Optimizer - Diagnóstico do Sistema"
 publish_to: 'none'
 
-version: 2.1.0+1
+version: 2.1.0+2
 
 environment:
   sdk: '>=3.2.6 <4.0.0'
@@ -15,8 +15,13 @@ dependencies:
   device_info_plus: ^9.1.1
   battery_plus: ^4.0.2
   connectivity_plus: ^5.0.2
+  package_info_plus: ^4.2.0
   path_provider: ^2.1.1
   shared_preferences: ^2.2.2
+  google_mobile_ads: ^3.0.0
+  in_app_purchase: ^3.1.11
+  permission_handler: ^11.0.1
+  provider: ^6.1.1
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+import 'package:provider/provider.dart';
+import '../services/device_service.dart';
+import '../services/theme_service.dart';
+import '../services/subscription_service.dart';
 import 'performance_screen.dart';
 
 class AnalysisScreen extends StatefulWidget {
@@ -10,18 +14,54 @@ class AnalysisScreen extends StatefulWidget {
 }
 
 class _AnalysisScreenState extends State<AnalysisScreen> {
-  int systemScore = 85;
+  Map<String, dynamic>? _performanceData;
   bool isAnalyzing = false;
 
   @override
+  void initState() {
+    super.initState();
+    _loadPerformanceData();
+  }
+
+  Future<void> _loadPerformanceData() async {
+    setState(() {
+      isAnalyzing = true;
+    });
+
+    try {
+      final data = await DeviceService().getPerformanceAnalysis();
+      setState(() {
+        _performanceData = data;
+      });
+    } catch (e) {
+      print('Erro ao carregar dados de performance: $e');
+    } finally {
+      setState(() {
+        isAnalyzing = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWeb = screenWidth > 600;
+    final themeService = Provider.of<ThemeService>(context);
+    final subscriptionService = Provider.of<SubscriptionService>(context);
+    
+    final systemScore = _performanceData?['score'] ?? 85;
+    final status = _performanceData?['status'] ?? 'Boa';
+    final issues = _performanceData?['issues'] ?? <String>[];
+    final recommendations = _performanceData?['recommendations'] ?? <String>[];
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A1A),
+      backgroundColor: themeService.backgroundColor,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(isWeb ? 32.0 : 20.0),
+            child: Column(
+              children: [
               // Header
               Row(
                 children: [
@@ -64,34 +104,36 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
               const SizedBox(height: 40),
 
               // Score Circle
-              CircularPercentIndicator(
-                radius: 120.0,
-                lineWidth: 12.0,
-                animation: true,
-                percent: systemScore / 100,
-                center: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '$systemScore',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 48.0,
-                        color: Colors.white,
+              Center(
+                child: CircularPercentIndicator(
+                  radius: isWeb ? 140.0 : 120.0,
+                  lineWidth: isWeb ? 14.0 : 12.0,
+                  animation: true,
+                  percent: systemScore / 100,
+                  center: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '$systemScore',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: isWeb ? 56.0 : 48.0,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                    const Text(
-                      'Pontos',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        color: Colors.grey,
+                      Text(
+                        'Pontos',
+                        style: TextStyle(
+                          fontSize: isWeb ? 18.0 : 16.0,
+                          color: Colors.grey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  circularStrokeCap: CircularStrokeCap.round,
+                  progressColor: Colors.white,
+                  backgroundColor: Colors.grey[800]!,
                 ),
-                circularStrokeCap: CircularStrokeCap.round,
-                progressColor: Colors.white,
-                backgroundColor: Colors.grey[800]!,
               ),
               const SizedBox(height: 20),
 
@@ -161,20 +203,21 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                 },
               ),
 
-              const Spacer(),
+              SizedBox(height: isWeb ? 60 : 40),
 
               // Analyze Button
-              SizedBox(
-                width: double.infinity,
-                height: 50,
+              Container(
+                width: isWeb ? 400 : double.infinity,
+                height: isWeb ? 56 : 50,
                 child: ElevatedButton(
                   onPressed: isAnalyzing ? null : _startAnalysis,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(isWeb ? 28 : 25),
                     ),
+                    elevation: 2,
                   ),
                   child: isAnalyzing
                       ? const SizedBox(
@@ -185,19 +228,24 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                             valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
                           ),
                         )
-                      : const Text(
+                      : Text(
                           'Analisar Novamente',
                           style: TextStyle(
-                            fontSize: 16,
+                            fontSize: isWeb ? 18 : 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                 ),
               ),
-            ],
+              SizedBox(height: isWeb ? 40 : 20),
+              ],
+            ),
           ),
         ),
       ),
+      bottomNavigationBar: subscriptionService.shouldShowAd() 
+          ? subscriptionService.getBannerAdWidget()
+          : null,
     );
   }
 

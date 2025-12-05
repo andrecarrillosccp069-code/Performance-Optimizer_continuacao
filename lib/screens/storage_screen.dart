@@ -12,13 +12,17 @@ class _StorageScreenState extends State<StorageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWeb = screenWidth > 600;
+    
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(isWeb ? 32.0 : 20.0),
+            child: Column(
+              children: [
               // Header
               Row(
                 children: [
@@ -159,20 +163,21 @@ class _StorageScreenState extends State<StorageScreen> {
                 color: Colors.purple,
               ),
 
-              const Spacer(),
+              SizedBox(height: isWeb ? 60 : 40),
 
               // Clean Files Button
-              SizedBox(
-                width: double.infinity,
-                height: 50,
+              Container(
+                width: isWeb ? 400 : double.infinity,
+                height: isWeb ? 56 : 50,
                 child: ElevatedButton.icon(
                   onPressed: isCleaningFiles ? null : _cleanFiles,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Colors.black,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(isWeb ? 28 : 25),
                     ),
+                    elevation: 2,
                   ),
                   icon: isCleaningFiles
                       ? const SizedBox(
@@ -186,14 +191,16 @@ class _StorageScreenState extends State<StorageScreen> {
                       : const Icon(Icons.cleaning_services),
                   label: Text(
                     isCleaningFiles ? 'Limpando...' : 'Limpar Arquivos',
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: TextStyle(
+                      fontSize: isWeb ? 18 : 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-            ],
+              SizedBox(height: isWeb ? 40 : 20),
+              ],
+            ),
           ),
         ),
       ),

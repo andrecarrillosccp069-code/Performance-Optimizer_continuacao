@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../services/theme_service.dart';
+import '../services/subscription_service.dart';
+import 'premium_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -9,18 +13,21 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool notificationsEnabled = true;
-  bool darkThemeEnabled = true;
   bool realTimeProtection = true;
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isWeb = screenWidth > 600;
+    
     return Scaffold(
       backgroundColor: const Color(0xFF1A1A1A),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: EdgeInsets.all(isWeb ? 32.0 : 20.0),
+            child: Column(
+              children: [
               // Header
               Row(
                 children: [
@@ -148,14 +155,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 },
               ),
 
-              _buildSwitchItem(
-                icon: Icons.dark_mode,
-                title: 'Tema Escuro',
-                value: darkThemeEnabled,
-                onChanged: (value) {
-                  setState(() {
-                    darkThemeEnabled = value;
-                  });
+              Consumer<ThemeService>(
+                builder: (context, themeService, child) {
+                  return _buildSwitchItem(
+                    icon: Icons.dark_mode,
+                    title: 'Tema Escuro',
+                    value: themeService.isDarkMode,
+                    onChanged: (value) {
+                      themeService.toggleTheme();
+                    },
+                  );
                 },
               ),
 
@@ -188,6 +197,87 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
 
               const SizedBox(height: 30),
+
+              // Premium Section
+              Consumer<SubscriptionService>(
+                builder: (context, subscriptionService, child) {
+                  if (!subscriptionService.isPremium) {
+                    return Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'PREMIUM',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildMenuItem(
+                          icon: Icons.star,
+                          title: 'Upgrade para Premium',
+                          subtitle: 'Sem anúncios + recursos avançados',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const PremiumScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        const Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'PREMIUM',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.amber.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.amber),
+                          ),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.star, color: Colors.amber),
+                              SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  'Você é um usuário Premium!',
+                                  style: TextStyle(
+                                    color: Colors.amber,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    );
+                  }
+                },
+              ),
 
               // About Section
               const Align(
@@ -250,7 +340,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   fontSize: 12,
                 ),
               ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
