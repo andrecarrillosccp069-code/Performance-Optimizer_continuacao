@@ -1,12 +1,63 @@
-# Performance Optimizer - Guia de Release
+# Guia de Release para Play Store
 
-## 📱 Versão Android para Play Store
+Este guia contém todas as informações necessárias para publicar o Performance Optimizer na Google Play Store.
 
-### Arquivos Gerados
-- **APK Release**: `build/app/outputs/flutter-apk/app-release.apk` (18.1MB)
-- **AAB Release**: `build/app/outputs/bundle/release/app-release.aab` (18.1MB)
+## 📋 Checklist Pré-Release
 
-### Informações do App
+### ✅ Desenvolvimento Completo
+- [x] Funcionalidades principais implementadas
+- [x] Extração de dados reais do dispositivo
+- [x] Sistema de temas (claro/escuro)
+- [x] Planos gratuito e premium
+- [x] Sistema de anúncios integrado
+- [x] Compras in-app configuradas
+- [x] Splash screen personalizada
+- [x] Interface otimizada para mobile
+
+### ✅ Documentação
+- [x] Política de Privacidade criada
+- [x] Termos de Uso criados
+- [x] Descrição da Play Store preparada
+- [x] README.md atualizado
+
+### ✅ Configurações Android
+- [x] Permissões necessárias adicionadas
+- [x] Build configurado para release
+- [x] ProGuard configurado
+- [x] Ícone do app criado
+
+## 🔧 Preparação para Build
+
+### 1. Configurar Keystore (Primeira vez)
+```bash
+# Criar keystore para assinatura
+keytool -genkey -v -keystore ~/performance-optimizer-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias performance-optimizer
+
+# Criar arquivo key.properties na raiz do projeto Android
+echo "storePassword=SUA_SENHA_STORE" > android/key.properties
+echo "keyPassword=SUA_SENHA_KEY" >> android/key.properties
+echo "keyAlias=performance-optimizer" >> android/key.properties
+echo "storeFile=~/performance-optimizer-key.jks" >> android/key.properties
+```
+
+### 2. Build para Release
+```bash
+# Limpar builds anteriores
+flutter clean
+flutter pub get
+
+# Build App Bundle (recomendado para Play Store)
+flutter build appbundle --release
+
+# Ou build APK se necessário
+flutter build apk --release
+```
+
+### 3. Localizar Arquivos
+- **App Bundle**: `build/app/outputs/bundle/release/app-release.aab`
+- **APK**: `build/app/outputs/flutter-apk/app-release.apk`
+
+## 📱 Informações do App
 - **Package Name**: `com.performanceoptimizer.app`
 - **Version Name**: `2.1.0`
 - **Version Code**: `2`
